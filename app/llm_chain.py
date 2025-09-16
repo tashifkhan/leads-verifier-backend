@@ -1,5 +1,17 @@
 from __future__ import annotations
 
+"""LLM layer for intent classification and reasoning (up to 50 points).
+
+This module wires up a concise prompt to Gemini and parses its two-line
+response of the form:
+
+    Intent: <High|Medium|Low>
+    Reasoning: <short explanation>
+
+The parsed intent maps to points via a simple lookup, and the reasoning is
+returned verbatim for transparency.
+"""
+
 import os
 import re
 from typing import Tuple
@@ -27,9 +39,13 @@ def _build_llm() -> ChatGoogleGenerativeAI:
         raise RuntimeError(
             "GEMINI_API_KEY not set. Define it in environment or .env file."
         )
-    return ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
+    return ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        google_api_key=api_key,
+    )
 
 
+# Prompt is intentionally short and deterministic to simplify downstream parsing.
 prompt_template = ChatPromptTemplate.from_messages(
     [
         (
@@ -81,6 +97,7 @@ def parse_ai_response(response_text: str) -> Tuple[str, str, int]:
     intent = intent_match.group(1).capitalize() if intent_match else "Low"
     reasoning = reasoning_match.group(1).strip() if reasoning_match else text
 
+    # Map discrete intent to a bounded point contribution (0–50 range used in total score)
     points_map = {
         "High": 50,
         "Medium": 30,

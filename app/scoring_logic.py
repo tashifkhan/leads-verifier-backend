@@ -1,10 +1,24 @@
 from __future__ import annotations
 
+"""Deterministic rule-based scoring (0–50).
+
+This module implements a simple, transparent heuristic to assign up to 50 points
+to a lead before the AI layer contributes additional points. The breakdown is:
+
+- Role relevance (0–20): Decision-makers score higher than influencers.
+- ICP/industry token overlap (0–20): More overlap implies better fit.
+- Data completeness (0–10): Encourages fully populated lead records.
+
+These rules are intentionally lightweight and auditable for assignment scope.
+"""
+
 from typing import List
 
 from .models import Lead, ProductOffer
 
 
+# Keywords that generally indicate a decision maker. We use substring matching
+# (case-insensitive) for a pragmatic heuristic rather than exact titles.
 DECISION_MAKER_KEYWORDS = [
     "head",
     "director",
@@ -21,6 +35,7 @@ DECISION_MAKER_KEYWORDS = [
     "lead",
 ]
 
+# Titles that often influence decisions but may not be final approvers.
 INFLUENCER_KEYWORDS = [
     "manager",
     "specialist",
@@ -31,6 +46,7 @@ INFLUENCER_KEYWORDS = [
 
 
 def _contains_any(text: str, keywords: List[str]) -> bool:
+    """Return True if any keyword is a substring of the given text (case-insensitive)."""
     t = text.lower()
     return any(k in t for k in keywords)
 
@@ -76,5 +92,5 @@ def calculate_rule_score(lead: Lead, offer: ProductOffer) -> int:
     if all(str(f or "").strip() for f in fields):
         score += 10
 
-    # bound to 0..50
+    # Bound to 0..50 to avoid accidental drift if rules change
     return max(0, min(50, score))
