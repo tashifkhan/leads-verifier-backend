@@ -20,7 +20,7 @@ from .scoring_workflow import scoring_workflow
 
 
 app = FastAPI(
-    title="Lead Scoring Backend (LangChain + LangGraph)",
+    title="Lead Scoring Backend",
     description=(
         "Upload an offer and a CSV of leads, then score them using rules + AI."
     ),
@@ -46,17 +46,34 @@ async def upload_offer(offer: ProductOffer):
 @app.post("/leads/upload", summary="Upload Leads CSV file")
 async def upload_leads(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(".csv"):  # type: ignore
-        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+        raise HTTPException(
+            status_code=400,
+            detail="Only CSV files are supported",
+        )
     try:
         content = await file.read()
         df = pd.read_csv(io.BytesIO(content))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {e}")
 
-    required_cols = ["name", "role", "company", "industry", "location", "linkedin_bio"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to parse CSV: {e}",
+        )
+
+    required_cols = [
+        "name",
+        "role",
+        "company",
+        "industry",
+        "location",
+        "linkedin_bio",
+    ]
     for col in required_cols:
         if col not in df.columns:
-            raise HTTPException(status_code=400, detail=f"Missing column in CSV: {col}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Missing column in CSV: {col}",
+            )
 
     uploaded_leads.clear()
     for _, row in df.iterrows():
@@ -70,18 +87,22 @@ async def upload_leads(file: UploadFile = File(...)):
         )
         uploaded_leads.append(lead)
 
-    return {"message": f"Uploaded {len(uploaded_leads)} leads."}
+    return {
+        "message": f"Uploaded {len(uploaded_leads)} leads.",
+    }
 
 
 @app.post("/score", summary="Run scoring on uploaded leads")
 async def run_scoring():
     if current_offer is None:
         raise HTTPException(
-            status_code=400, detail="No offer uploaded. POST /offer first."
+            status_code=400,
+            detail="No offer uploaded. POST /offer first.",
         )
     if not uploaded_leads:
         raise HTTPException(
-            status_code=400, detail="No leads uploaded. POST /leads/upload first."
+            status_code=400,
+            detail="No leads uploaded. POST /leads/upload first.",
         )
 
     scored_leads.clear()
