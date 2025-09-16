@@ -11,7 +11,11 @@ def run_rule_engine_node(state: ScoringState) -> ScoringState:
     lead: Lead = state.get("lead")  # type: ignore
     offer: ProductOffer = state.get("offer")  # type: ignore
     rule_score = calculate_rule_score(lead, offer)
-    return {**state, "rule_score": rule_score}
+
+    return {
+        **state,
+        "rule_score": rule_score,
+    }
 
 
 async def run_ai_intent_classification_node(state: ScoringState) -> ScoringState:
