@@ -52,3 +52,21 @@ Then open http://localhost:8000/docs
 - For assignment scope, data is stored in-memory and resets when the server restarts.
 - Rule layer: role relevance, ICP overlap, completeness (max 50).
 - AI layer: Gemini classifies intent + reasoning; intent mapped to points (High=50, Medium=30, Low=10).
+
+## Docker
+
+Build the image:
+
+```bash
+docker build -t assignment-backend:latest .
+```
+
+Run the container (requires `GEMINI_API_KEY`):
+
+```bash
+docker run --rm -p 8000:8000 \
+    -e GEMINI_API_KEY=your_key_here \
+    assignment-backend:latest
+```
+
+Now open http://localhost:8000/docs

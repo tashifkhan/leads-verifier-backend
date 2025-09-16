@@ -81,5 +81,9 @@ def parse_ai_response(response_text: str) -> Tuple[str, str, int]:
     intent = intent_match.group(1).capitalize() if intent_match else "Low"
     reasoning = reasoning_match.group(1).strip() if reasoning_match else text
 
-    points_map = {"High": 50, "Medium": 30, "Low": 10}
+    points_map = {
+        "High": 50,
+        "Medium": 30,
+        "Low": 10,
+    }
     return intent, reasoning, points_map.get(intent, 10)

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Environments
+.env
+.venv/
+.venv*/
+venv/
+
+# Packaging
+.eggs/
+*.egg-info/
+
+# VCS
+.git/
+.gitignore
+.gitattributes
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Tests
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Dockerfile itself is fine to include
+# Lock file should be kept for reproducible builds

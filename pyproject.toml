@@ -13,10 +13,9 @@ dependencies = [
 	"langchain>=0.2.14",
 	"langchain-google-genai>=2.0.6",
 	"langgraph>=0.2.26",
+	"uvicorn>=0.35.0",
 ]
 
 [tool.uv]
 # Allows running: uv run app.main:app --reload
-dev-dependencies = [
-    "uvicorn>=0.35.0",
-]
+dev-dependencies = []
